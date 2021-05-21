@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow import keras as tfk
 from tensorflow_probability import distributions as tfd
 from tensorflow_probability import util as tfu
-
+from matplotlib import pyplot as plt
 
 ###############################################################################
 # This is just a little example using the the keras functional API and        #
@@ -15,7 +15,7 @@ from tensorflow_probability import util as tfu
 n_features = 100 #Number of fourier features
 n_layers = 20 #Number of hidden layers
 hidden_width = 3 #Width of hidden layers
-sigma=20.
+sigma=30.
 
 im = np.load("../data/srs_image_1.npy")
 mask = np.load("../data/mask_image_1.npy")
@@ -48,6 +48,7 @@ model.fit(X, y, epochs=2)
 
 output = im.astype(np.float32)
 output[mask] = model(gamma[mask.flatten()]).numpy().flatten()
+
 
 background = model(gamma).numpy().reshape(im.shape)
 plt.matshow(output)
