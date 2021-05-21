@@ -12,9 +12,10 @@ from tensorflow_probability import util as tfu
 ###############################################################################
 
 
-n_features = 10 #Number of fourier features
+n_features = 100 #Number of fourier features
 n_layers = 20 #Number of hidden layers
-hidden_width = 5 #Width of hidden layers
+hidden_width = 3 #Width of hidden layers
+sigma=20.
 
 im = np.load("../data/srs_image_1.npy")
 mask = np.load("../data/mask_image_1.npy")
@@ -23,7 +24,7 @@ mask = np.load("../data/mask_image_1.npy")
 #Encode fourier features
 idx = np.indices(im.shape).reshape((2, -1)).T
 V = idx/idx.max()
-B = np.random.normal(size=(2, n_features))
+B = np.random.normal(scale=sigma, size=(2, n_features))
 gamma = np.hstack((np.cos(2*np.pi*V@B), np.sin(2*np.pi*V@B)))
 
 #Pixel values
@@ -39,7 +40,8 @@ model = tfk.Sequential(
     [tfk.layers.Dense(1, activation='softplus')]
 )
 
-model.compile('adam', loss=tfk.losses.Poisson())
+#model.compile('adam', loss=tfk.losses.Poisson())
+model.compile('adam', loss=tfk.losses.MeanSquaredError())
 #This converges in 2 epochs
 model.fit(X, y, epochs=2)
 
@@ -47,6 +49,7 @@ model.fit(X, y, epochs=2)
 output = im.astype(np.float32)
 output[mask] = model(gamma[mask.flatten()]).numpy().flatten()
 
-from matplotlib import pyplot as plt
+background = model(gamma).numpy().reshape(im.shape)
 plt.matshow(output)
+plt.matshow(background)
 plt.show()
