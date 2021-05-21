@@ -40,8 +40,7 @@ model = tfk.Sequential(
     [tfk.layers.Dense(1, activation='softplus')]
 )
 
-#model.compile('adam', loss=tfk.losses.Poisson())
-model.compile('adam', loss=tfk.losses.MeanSquaredError())
+model.compile('adam', loss=tfk.losses.Poisson())
 #This converges in 2 epochs
 model.fit(X, y, epochs=2)
 
@@ -49,8 +48,18 @@ model.fit(X, y, epochs=2)
 output = im.astype(np.float32)
 output[mask] = model(gamma[mask.flatten()]).numpy().flatten()
 
-
 background = model(gamma).numpy().reshape(im.shape)
+
+plt.matshow(im)
+plt.title("Input Image")
+
 plt.matshow(output)
+plt.title("In-filled Image")
+
 plt.matshow(background)
+plt.title("Background Estimate")
+
+plt.matshow(im - background)
+plt.title("Input Image - Background Estimate")
+
 plt.show()
