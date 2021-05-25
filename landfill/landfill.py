@@ -3,6 +3,7 @@ __all__ = [
     "prep_data",
     "create_model",
     "backfill",
+    "visualize",
 ]
 import numpy as np
 from tensorflow import keras as tfk
@@ -145,7 +146,7 @@ def visualize(im, output, background, share_norm=True, sharex=True, sharey=True)
     """
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(1, 3, sharex=sharex, sharey=sharey)
+    fig, axs = plt.subplots(1, 3, sharex=sharex, sharey=sharey)
     if share_norm:
         vmax = np.max(np.maximum.reduce([im, output, background]))
         vmin = np.min(np.minimum.reduce([im, output, background]))
@@ -159,5 +160,5 @@ def visualize(im, output, background, share_norm=True, sharex=True, sharey=True)
     axs[1].set_title("In-filled Image")
 
     axs[2].matshow(background, vmin=vmin, vmax=vmax)
-    ax.set_title("Background Estimate")
+    axs[2].set_title("Background Estimate")
     return fig, axs

@@ -12,6 +12,7 @@ print(y.dtype)
 model = create_model(n_features)
 
 model.fit(X.astype(np.float32), y, epochs=2)
-from IPython import embed
 
-embed()
+output, background = lf.backfill(im, mask, gamma, model)
+fig, axs = lf.visualize(im, output, background)
+
