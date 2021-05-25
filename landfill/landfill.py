@@ -67,7 +67,7 @@ def prep_data(im, mask, sigma, n_features=20):
 
 
 def create_model(
-    n_features, n_layers=20, hidden_width=3, loss=tfk.losses.Poisson(), optimizer="adam"
+    n_features, n_layers=20, hidden_width=3, loss=None, optimizer="adam"
 ):
     """
     Convenience function for creating a Keras perceptron
@@ -79,13 +79,16 @@ def create_model(
         The number of hidden layers
     hidden_width : int, default: 3
         The width of the hidden layers
-    loss : tf loss function
+    loss : tf loss function, optional
+        If None will default to `tensorflow.keras.losses.Poisson()`
     optimizer : str, default: 'adam'
 
     Returns
     -------
     keras.Sequential
     """
+    if loss is None:
+        loss = tfk.losses.Poisson()
     model = tfk.Sequential(
         [tfk.layers.Dense(n_features * 2, activation=tfk.layers.LeakyReLU())]
         + [
