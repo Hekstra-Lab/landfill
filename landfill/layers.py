@@ -1,4 +1,5 @@
 from numbers import Number
+from math import pi
 import torch
 from torch import nn
 
@@ -14,8 +15,12 @@ class GaussianFourierFeatures(nn.Module):
         self.n_features = n_features
         self.n_dims = n_dims
         self.B = (sigma*torch.randn(self.n_features, n_dims)).t()
+        # gamma = torch.distributions.Gamma(, 0.05)
+        # self.B = nn.Parameter(gamma.sample(torch.Size((self.n_dims, self.n_features))), requires_grad=False)
+        # self.B = nn.Parameter(torch.distributions.Uniform(-200, 200).sample(torch.Size((self.n_dims, self.n_features))), requires_grad=False)
+        
     def forward(self, x):
-        y = x.mm(self.B)
+        y = 2*pi*x.mm(self.B)
         c = torch.cos(y)
         s = torch.sin(y)
         return torch.cat((c,s),dim=-1)
