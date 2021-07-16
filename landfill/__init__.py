@@ -4,4 +4,5 @@ from ._version import __version__
 # from .landfill import *
 from . import layers
 from . import model
+from . import data
 
