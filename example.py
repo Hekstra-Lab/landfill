@@ -24,9 +24,15 @@ mask = binary_fill_holes(binary_dilation(np.load("./data/mask_image_1.npy"), str
 
 show_mask = np.zeros(im.shape+(4,))
 show_mask[mask,-1] = 1
-dataloader = SingleImDataLoader(im, mask, batch_size)
+
+use_cuda = torch.cuda.is_available()
+
+dataloader = SingleImDataLoader(im, mask, batch_size, cuda=torch.cuda.is_available())
 
 lf = Landfill(sigma=sigma, n_fourier_features=n_features, n_layers=n_layers, hidden_width=hidden_width, coord_dims=2, other_dims=0) 
+if torch.cuda.is_available():
+    lf = lf.cuda()
+    
 ploss = torch.nn.PoissonNLLLoss(full=True, log_input=False)
 opt = torch.optim.Adam(lf.parameters())
 
