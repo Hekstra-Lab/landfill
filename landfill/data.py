@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 
 class SingleImDataset(Dataset):
-    def __init__(self, image, mask):
+    def __init__(self, image, mask, cuda):
 
         if isinstance(image, str):
             self.image = np.load(image)
@@ -20,12 +20,16 @@ class SingleImDataset(Dataset):
         self.coords = all_coords[self.train_mask]
         self.pixels = all_pixels[self.train_mask]
 
+        if cuda:
+            self.coords = self.coords.cuda()
+            self.pixels = self.pixels.cuda()
+
     def __getitem__(self, idx):
         return self.coords[idx], self.pixels[idx]
 
     def __len__(self):
         return self.train_mask.sum()
 
-def SingleImDataLoader(image, mask, batch_size=128):
-    ds = SingleImDataset(image, mask)
+def SingleImDataLoader(image, mask, batch_size=128, cuda=False):
+    ds = SingleImDataset(image, mask, cuda=cuda)
     return DataLoader(ds, batch_size=batch_size, shuffle=True)
