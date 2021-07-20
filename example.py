@@ -16,7 +16,7 @@ n_features = 256 #Number of fourier features
 n_layers = 8 #Number of hidden layers
 hidden_width = 256 #Width of hidden layers
 sigma=50. # Standard Dev. for frequencies of gaussian features
-n_epochs = 40 # Training epochs
+n_epochs = 30 # Training epochs
 batch_size= 128# Batch size for 
 
 im = np.load("./data/srs_image_1.npy")
@@ -64,8 +64,10 @@ for epoch in range(n_epochs):
     print(f"End of epoch {epoch+1}. Avg Loss = {e_losses[-1]:0.6f}.")
 
 with torch.no_grad():
-    yx = yx = torch.tensor(np.indices(im.shape).reshape(2,-1).T/512).to(torch.float) 
-    pred_im = lf(yx).numpy().reshape(im.shape)
+    yx = yx = torch.tensor(np.indices(im.shape).reshape(2,-1).T/im.shape[0]).to(torch.float) 
+    if torch.cuda.is_available():
+        yx = yx.cuda()
+    pred_im = lf(yx).cpu().numpy().reshape(im.shape)
 
 fig, ax = plt.subplots(1,3, figsize=(25,8))
 ax[0].imshow(pred_im, vmin=0, vmax=255)
