@@ -3,4 +3,4 @@ Machine learning tools to estimate spatiotemporally resolved background intensit
 
 
 ### Watch those islands sink into the sea
-![Masking cells with background estimates](data/sinking.png)
+![Masking cells with background estimates](data/landfill.png)
