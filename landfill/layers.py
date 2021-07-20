@@ -14,7 +14,7 @@ class GaussianFourierFeatures(nn.Module):
                 self.sigma = torch.tensor(self.sigma)
         self.n_features = n_features
         self.n_dims = n_dims
-        self.B = (sigma*torch.randn(self.n_features, n_dims)).t()
+        self.B = nn.Parameter((sigma*torch.randn(self.n_features, n_dims)).t(), requires_grad=False)
         # gamma = torch.distributions.Gamma(, 0.05)
         # self.B = nn.Parameter(gamma.sample(torch.Size((self.n_dims, self.n_features))), requires_grad=False)
         # self.B = nn.Parameter(torch.distributions.Uniform(-200, 200).sample(torch.Size((self.n_dims, self.n_features))), requires_grad=False)
