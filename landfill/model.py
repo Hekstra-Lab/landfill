@@ -3,7 +3,7 @@ from torch import nn
 from .layers import GaussianFourierFeatures
 
 class Landfill(nn.Module):
-    def __init__(self, sigma, n_fourier_features, n_layers, hidden_width, coord_dims, other_dims=0,leaky_relu_slope=0.25):
+    def __init__(self, sigma, n_fourier_features, n_layers, hidden_width, coord_dims, other_dims=0,leaky_relu_slope=0.25, final_transform=None):
         super(Landfill, self).__init__()
         self.sigma = sigma
         self.relu = nn.LeakyReLU(negative_slope=leaky_relu_slope)
@@ -22,12 +22,20 @@ class Landfill(nn.Module):
             dense_layers.append(linear)
             dense_layers.append(nn.LeakyReLU(negative_slope=leaky_relu_slope))
         
-        self.mlp = nn.Sequential(*dense_layers)#[nn.Linear(hidden_width, hidden_width), nn.LeakyReLU()])
+        self.mlp = nn.Sequential(*dense_layers)
         self.dropout = nn.Dropout(p=0.1)
+
         self.out = nn.Linear(hidden_width,1)
-                                                                                                                                                                                                                                    
+        
+        if final_transform=='softplus':
+            self.final = nn.Softplus()
+        elif final_transform=='sigmoid':
+            self.final = nn.Sigmoid()
+        else:
+            self.final = nn.Identity()
+
+
     def forward(self, x, u=None):
-        #         print(x.dtype)
         z = self.ff(x)
         if u is not None:
             if u.ndim==1:
@@ -38,7 +46,8 @@ class Landfill(nn.Module):
         z = self.relu(self.fourier_linear(z))
         z = self.mlp(z)
         z = self.dropout(z)
-        return self.softplus(self.out(z)).squeeze()
+        z = self.out(z)
+        return self.final(z).squeeze()
         #return self.sigmoid(self.out(z)).squeeze()
 """
         elif fourier_layer=='positional':
